@@ -23,7 +23,24 @@ Remixer.prototype.init = function() {
     if (this.tracks === null) {
         throw new Error("Track information not provided.");
     }
-    this.selector.addEventListener("timeupdate", this.timeupdateHandler.bind(this));
+    this.render();
+    this.player.addEventListener("timeupdate", this.timeupdateHandler.bind(this));
+}
+
+Remixer.prototype.render = function() {
+    var audio = document.createElement("audio");
+    audio.src = this.config.src;
+    audio.className = "remixer__player";
+    audio.controls = "controls";
+    
+    var trackInfo = document.createElement("div");
+    trackInfo.className = "remixer__track-info";
+    trackInfo.textContent = "---";
+    
+    this.selector.appendChild(audio);
+    this.selector.appendChild(trackInfo);
+
+    this.player = document.querySelector(".remixer__player");
 }
 
 Remixer.prototype.timeupdateHandler = function(e) {
@@ -80,5 +97,6 @@ var tracks = [
 ];
 
 var r = new Remixer({
-    tracks: tracks
+    tracks: tracks,
+    src: "moremix_2.mp3"
 });
