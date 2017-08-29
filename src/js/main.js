@@ -29,12 +29,12 @@ Remixer.prototype.init = function() {
 
 Remixer.prototype.render = function() {
     var audio = document.createElement("audio");
-    audio.src = this.config.src;
+    audio.src = this.config.tracks[0].src;
     audio.className = "remixer__player";
     audio.controls = "controls";
     
     var trackInfo = document.createElement("div");
-    trackInfo.className = "remixer__track-info";
+    trackInfo.className = "remixer__component";
     trackInfo.textContent = "---";
     
     this.selector.appendChild(audio);
@@ -50,20 +50,20 @@ Remixer.prototype.timeupdateHandler = function(e) {
 }
 
 Remixer.prototype.getCurrentTrackFromTimestamp = function(timestamp) {
-    var timestamps = this.config.tracks.map(function(track) {
-        return track.timestamp;
+    var timestamps = this.config.tracks[0].components.map(function(component) {
+        return component.timestamp;
     });
     
-    var trackIndex = 0;
+    var componentIndex = 0;
     for (var i = 0; i < timestamps.length; i++) {
         if (timestamp > timestamps[i]) {
-            trackIndex = i;
+            componentIndex = i;
         }
     }
-    return this.config.tracks[trackIndex];
+    return this.config.tracks[0].components[componentIndex];
 }
 
 Remixer.prototype.setTrackInfo = function(text) {
-    var trackInfo = document.querySelector(".remixer__track-info");
+    var trackInfo = document.querySelector(".remixer__component");
     trackInfo.textContent = text;
 }
