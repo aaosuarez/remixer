@@ -67,36 +67,3 @@ Remixer.prototype.setTrackInfo = function(text) {
     var trackInfo = document.querySelector(".remixer__track-info");
     trackInfo.textContent = text;
 }
-
-var tracks = [
-    {
-        "title": "You Can Do It (Jar Jar Kinx Remix)",
-        "artist": "Ice Cube",
-        "timestamp": 0
-    },
-    {
-        "title": "Jook Gal (Head Gawn Remix)",
-        "artist": "Elephant Man ft. Twista",
-        "timestamp": 47
-    },
-    {
-        "title": "Pony (eSenTRIK Remix)",
-        "artist": "Ginuwine",
-        "timestamp": 71
-    },
-    {
-        "title": "Bad Girls (Switch Remix)",
-        "artist": "M.I.A. ft Missy Elliott & Rye Rye",
-        "timestamp": 110
-    },
-    {
-        "title": "I Get Lonely (DJ Hoodboi Remix)",
-        "artist": "Janet Jackson",
-        "timestamp": 147
-    }
-];
-
-var r = new Remixer({
-    tracks: tracks,
-    src: "moremix_2.mp3"
-});
