@@ -1,35 +1,40 @@
 "use strict";
 
 function Remixer(options) {
-    this.config = this.mergeSettings(options);
-    this.selector = (typeof this.config.selector == "string") ? document.querySelector(this.config.selector) : this.config.selector;
+    this.mergeOptions(options);
+    this.selector = (typeof this.selector == "string") ? document.querySelector(this.selector) : this.selector;
     this.init();
 }
 
-Remixer.prototype.mergeSettings = function(userSettings) {
-    var settings = {
+Remixer.prototype.mergeOptions = function(options) {
+    var defaults = {
         selector: ".remixer"
     };
-    for (var attribute in userSettings) {
-        settings[attribute] = userSettings[attribute]
+    for (var attribute in defaults) {
+        this[attribute] = defaults[attribute];
     }
-    return settings;
+    for (var attribute in options) {
+        this[attribute] = options[attribute];
+    }
 }
 
 Remixer.prototype.init = function() {
-    if (this.selector === null) {
+    if (!this.selector) {
         throw new Error("Selector not present or misconfigured.");
     }
-    if (this.tracks === null) {
+    if (!this.tracks) {
         throw new Error("Track information not provided.");
     }
+    this.tracks = this.tracks.map(function(track){
+        return new Track(track);
+    });
     this.render();
     this.player.addEventListener("timeupdate", this.timeupdateHandler.bind(this));
 }
 
 Remixer.prototype.render = function() {
     var audio = document.createElement("audio");
-    audio.src = this.config.tracks[0].src;
+    audio.src = this.tracks[0].src;
     audio.className = "remixer__player";
     audio.controls = "controls";
     
@@ -45,25 +50,59 @@ Remixer.prototype.render = function() {
 
 Remixer.prototype.timeupdateHandler = function(e) {
     var currentTime = e.srcElement.currentTime;
-    var currentTrack = this.getCurrentTrackFromTimestamp(currentTime);
-    this.setTrackInfo(currentTrack.title + " - " + currentTrack.artist);
+    var currentComponent = this.getCurrentTrackFromTimestamp(currentTime);
+    this.setTrackInfo(currentComponent.title + " - " + currentComponent.artist);
 }
 
 Remixer.prototype.getCurrentTrackFromTimestamp = function(timestamp) {
-    var timestamps = this.config.tracks[0].components.map(function(component) {
+    var timestamps = this.tracks[0].components.map(function(component) {
         return component.timestamp;
     });
-    
+
     var componentIndex = 0;
     for (var i = 0; i < timestamps.length; i++) {
         if (timestamp > timestamps[i]) {
             componentIndex = i;
         }
     }
-    return this.config.tracks[0].components[componentIndex];
+    return this.tracks[0].components[componentIndex];
 }
 
 Remixer.prototype.setTrackInfo = function(text) {
     var trackInfo = document.querySelector(".remixer__component");
     trackInfo.textContent = text;
+}
+
+function Track(options) {
+    this.mergeOptions(options);
+    this.init();
+}
+
+Track.prototype.mergeOptions = function(options) {
+    var defaults = {
+        src: "",
+        components: []
+    };
+    for (var attribute in options) {
+        this[attribute] = options[attribute] || defaults[attribute];
+    }
+}
+
+Track.prototype.init = function() {
+    this.components = this.components.map(function(component) {
+        return new Component(component);
+    }).sort(function(a, b) {
+        return a.timestamp > b.timestamp;
+    });
+}
+
+function Component(options) {
+    var defaults = {
+        title: "unknown title",
+        artist: "unknown artist",
+        timestamp: 0
+    };
+    for (var attribute in defaults) {
+        this[attribute] = options[attribute] || defaults[attribute]
+    }
 }
